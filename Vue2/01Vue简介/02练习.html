@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="../vue.js"></script>
+</head>
+<body>
+<div id="root">
+    <h1>hello!{{hello}},我的英文名是{{name.toUpperCase()}}，我今年{{age}}岁，我来自{{address}}</h1>
+</div>
+</body>
+<script type="text/javascript">
+    Vue.config.productionTip = false; // 阻止 vue 在启动时生成生产提示
+    new Vue({
+        el:'#root',
+        // el 用于指定当前Vue实例为哪个容器服务，值通常为css选择器字符串
+        data:{
+            hello:'你好',
+            name:'cherry',
+            age:18,
+            address:'上海'
+        }
+        // data 中用于存储数据，数据供el所指定的容器去使用，值暂时先写成一个对象
+    })
+</script>
+</html>
+<!-- 
+    总结：
+    1.想让Vue工作，就必须创建一个Vue实例，且要传入一个配置对象
+    2.root容器里的代码依然符合html规范，只不过混入了一些特殊的Vue语法
+    3.root容器里的代码被称为【Vue模板】
+    4.容器 和 Vue实例 是 一一对应 的关系
+    5.真实开发中只有一个Vue实例，并且会配合着组件一起使用
+    6.{{xxx}}(插值语法)中的xxx要写js表达式，且xxx可以自动读取到data中的所有属性
+    7.一旦data中的数据发生改变，那么模板中用到该数据的地方也会自动更新。
+    
+    {{a}} 其中的a必须是表达式/语句/代码
+    注意区分js语句和js代码(语句)：
+        1.表达式：一个表达式会产生值，可以放在任何一个需要值的地方
+            eg1. a 
+            eg2. a+b   加法运算表达式
+            eg3. demo(1) 函数调用表达式(函数调用一定有返回值 即使是undefined)
+            eg4. x===y?'b':'b'  三元表达式/三目表达式
+        2.js代码(语句)
+            eg1.  if(){}
+            eg2. for(){}
+        js表达式是一种特殊的js代码，它会产生一个值
+-->
