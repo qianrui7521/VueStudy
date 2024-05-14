@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件修饰符</title>
+    <script type="text/javascript" src="../vue.js"></script>
+    <style>
+        * {
+            margin-top: 20px;
+        }
+        .demol {
+            height: 100px;
+            background-color: skyblue;
+        }
+        .box1 {
+            height: 100px;
+            background-color: pink;
+        }
+        .box2 {
+            height: 50px;
+            background-color: deeppink;
+        }
+        .demol2 {
+            height: 100px;
+            background-color: green;
+        }
+        ul {
+            width: 400px;
+            height: 200px;
+            background-color: orange;
+            overflow: auto;
+        }
+        ul>li {
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <!-- 1.prevent：阻止默认事件（常用）； -->
+        <h3>欢迎{{name}}的到来</h3>
+        <!-- <a href="https:baidu.com" @click="infor1">点我去百度</a> -->
+        <a href="https:baidu.com" @click.prevent="infor1">点我去百度</a>
+
+        <!-- 2.stop：阻止事件冒泡（常用）； -->
+        <div class="demol" @click="infor2">
+            <!-- <button @click="infor2">点我提示信息</button> -->
+            <button @click.stop="infor2">点我提示信息</button>
+        </div>
+
+        <!-- 3.once：事件只触发一次（常用）； -->
+        <!-- <button @click="infor3">你点我啊</button> -->
+        <button @click.once="infor3">你点我啊</button>
+
+        <!-- 4.capture：使用事件的捕获模式； -->
+        <div class="box1" @click.capture="infor4(1)">
+            盒子1
+            <div class="box2" @click="infor4(2)">
+                盒子2
+            </div>
+        </div>
+
+        <!-- 5.self：只有event.target是当前操作的元素时才触发事件； -->
+        <div class="demol2" @click.self="infor5">
+            <button @click="infor5">点我吧</button>
+        </div>
+
+        <!-- 6.passive：事件的默认行为立即执行，无需等待事件回调执行完毕；或者 @scroll -->
+        <!-- <ul @scroll="infor6"> -->
+            <!-- <li>1</li> -->
+            <!-- <li>2</li> -->
+            <!-- <li>3</li> -->
+            <!-- <li>4</li> -->
+            <!-- <li>5</li> -->
+            <!-- <li>6</li> -->
+        <!-- </ul> -->
+        <ul @wheel.passive="infor6">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        Vue.config.prodocionTip = false
+        new Vue ({
+            el:'#root',
+            data:{
+                name:'cherry'
+            },
+            methods:{
+                infor1(){
+                    alert('hello')
+                },
+                infor2(){
+                    alert('goot')
+                },
+                infor3(){
+                    alert('点我干嘛')
+                },
+                infor4(msg){
+                    console.log(msg)
+                },
+                infor5(){
+                    alert('点你')
+                },
+                infor6(){
+                    for(let i=0;i<10000;i++){
+                        console.log('#')
+                    }
+                    console.log('over')
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+<!--  
+    Vue中的事件修饰符：
+        1.prevent：阻止默认事件（常用）；
+        2.stop：阻止事件冒泡（常用）；
+        3.once：事件只触发一次（常用）；
+        4.capture：使用事件的捕获模式；
+        5.self：只有event.target是当前操作的元素时才触发事件；
+        6.passive：事件的默认行为立即执行，无需等待事件回调执行完毕；
+
+    event.preventDefault() 阻止默认行为    Vue中使用 @click.prevent
+    event.stoppropagation() 组织事件冒泡   Vue中使用 @click.stop
+-->
