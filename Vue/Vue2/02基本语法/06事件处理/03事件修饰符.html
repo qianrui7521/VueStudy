@@ -47,6 +47,14 @@
         <div class="demol" @click="infor2">
             <!-- <button @click="infor2">点我提示信息</button> -->
             <button @click.stop="infor2">点我提示信息</button>
+            <!-- 修饰符可以连续写 -->
+            <!-- 
+                prevent.stop 是先阻止默认事件再阻止事件冒泡 
+                stop.prevent 是先阻止事件冒泡再阻止默认事件
+                两者效果一样
+            -->
+            <!-- <a href="https:baidu.com" @click.stop.prevent="infor1">点我去百度</a> -->
+            <a href="https:baidu.com" @click.prevent.stop="infor1">点我去百度</a>
         </div>
 
         <!-- 3.once：事件只触发一次（常用）； -->
@@ -129,4 +137,9 @@
 
     event.preventDefault() 阻止默认行为    Vue中使用 @click.prevent
     event.stoppropagation() 组织事件冒泡   Vue中使用 @click.stop
+
+    修饰符可以连续写
+        prevent.stop 是先阻止默认事件再阻止事件冒泡 
+        stop.prevent 是先阻止事件冒泡再阻止默认事件
+        两者效果一样
 -->
