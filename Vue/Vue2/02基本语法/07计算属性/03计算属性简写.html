@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算属性简写</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        姓：<input type="text" v-model="firstname"><br>
+        名：<input type="text" v-model="lastname"><br>
+        全名：<span>{{fullName}}</span>
+    </div>
+    <script type="text/javascript">
+        Vue.config.docutationTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                firstname:'张',
+                lastname:'三'
+            },
+            computed:{
+                // 完整写法
+                // fullName:{
+                    // get(){
+                        // console.log('get被执行了')
+                        // console.log('-----', this)
+                        // return this.firstname + '-' + this.lastname  // get中的this就是vm
+                    // }
+                // }
+
+                // 简写 前提是没有set方法
+                // 函数名就是计算属性名，函数里的内容当getter来用
+                // 简写后看起来是fullName函数，但实际上是执行了这个函数往vm中放一个fullName的属性，且值为该函数调用的结果
+                fullName(){
+                    console.log('get被执行了')
+                    console.log('-----', this)
+                    return this.firstname + '-' + this.lastname  // get中的this就是vm
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+<!--  
+    计算属性 可以简写的前提：
+        只读不改 即只有get方法, 没有set方法
+-->

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插值语法实现</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        姓：<input type="text" v-model="firstname"><br>
+        名：<input type="text" v-model="lastname"><br>
+        全名：<span>{{firstname.slice(0,3).split('').reverse().join('').toUpperCase()}}-{{lastname}}</span>
+    </div>
+    <script type="text/javascript">
+        Vue.config.docutationTip = false
+        new Vue({
+            el:'#root',
+            data:{
+                firstname:'张',
+                lastname:'三'
+            }
+        })
+    </script>
+</body>
+</html>
+<!--  
+    v-bind:value    简写    :vlue      是单向绑定
+    v-model:value   简写    v-model    是双向绑定
+
+    假如提出需求：
+        需要将 全名中的姓 只提取前三个并且倒转顺序并且大写
+        虽然以插值语法的方式可以实现，如下
+            firstname.slice(0,3).split('').reverse().join('').toUpperCase()
+            1.取前三位 slice(0,3)包括0不包括3 
+            2.反转 split('')将字符串转成数组并以''隔开  reverse()反转数组  join('')再将反转后的数组按照''拼接成字符串
+            3.大写 toUppercase()将字符串转变成大写
+        
+        虽然使用插值语法的方式可以实现该要求，但违背了Vue中代码简写易懂的宗旨，
+        故采用 methods 方式一试 且看下一个
+-->

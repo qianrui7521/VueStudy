@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>methods实现</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        姓：<input type="text" v-model="firstname"><br>
+        名：<input type="text" v-model="lastname"><br>
+        全名：<span>{{fullName()}}</span>
+    </div>
+    <script type="text/javascript">
+        Vue.config.docutationTip = false
+        new Vue({
+            el:'#root',
+            data:{
+                firstname:'张',
+                lastname:'三'
+            },
+            methods:{
+                fullName(){
+                    console.log('我又执行了')
+                    return this.firstname.slice(0,3).split('').reverse().join('').toUpperCase() + '-' + this.lastname
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+<!--  
+    使用 methods的方式实现该需求：
+        是创建一个回调函数供自己调用
+        注意：
+            {{fullName}}  fullName为methods中的方法
+                当作为绑定事件使用时，fullnNme后的括号有无都行；
+                当作为回调函数使用时，
+                    fullName后无括号就是一个函数，在页面中照函数原样输出，
+                    fullName后有括号就是供我们使用的回调函数，调用后返回return中的值
+            因为fullName编写时不是箭头函数，故其中的this 代表的就是Vue实例
+        
+        缺点：
+            虽然使代码简洁了，但是创建的回调函数导致执行效率变低，
+            因为data中的数据一旦发生变化，模板就要重新解析(就是再重新阅读一遍)，在模板中使用插值语法配置了调用方法，
+            一旦firstname更改了，就会引起整个Vue模板的重新解析，又由于firstname的更改是来自firstname方法中的，
+            因此，只要firstname数据已更改，模板重新解析，就会再次调用该方法，从而导致方法的多次调用。
+        只要data中的数据一改变，Vue就一定会重新解析一遍模板，只有重新解析模板，才会知道模板里哪个位置用到了，然后页面中的数据才会更新。
+        重新解析模板的时候，只要遇到了插值语法中写方法，该方法一定会再重新调用。
+-->

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算属性实现</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        姓：<input type="text" v-model="firstname"><br>
+        名：<input type="text" v-model="lastname"><br>
+        全名：<span>{{fullName}}</span>
+        <!-- 全名：<span>{{fullName}}</span><br><br> -->
+        <!-- 全名：<span>{{fullName}}</span><br><br> -->
+        <!-- 全名：<span>{{fullName}}</span> -->
+    </div>
+    <script type="text/javascript">
+        Vue.config.docutationTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                firstname:'张',
+                lastname:'三'
+            },
+            computed:{
+                fullName:{
+                    get(){
+                        console.log('get被执行了')
+                        /*
+                            get有什么作用？
+                                当有人读取fullName时，get就会被调用，且返回值就作为fullName的值
+                            get函数什么时候执行？
+                                (1).初次读取时会执行一次。(在依赖数据不变时再次使用不会再调用，因为有缓存)
+                                (2).当依赖的数据发生改变时会被再次调用。(依赖的数据 指return中会更改的属性)
+                        */
+                        console.log('-----', this)
+                        return this.firstname + '-' + this.lastname  // get中的this就是vm
+                    },
+                    // set什么时候调用? 当fullName被修改时。
+                    set(value){
+                        console.log('set被执行了')
+                        console.log('set', value)
+                        const arr = value.split('-')
+                        this.firstname = arr[0]
+                        this.lastname = arr[1]
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+<!--  
+    与methods相比 计算属性中有get的优势就是有缓存，而methods方式中没有缓存，所以methods中插值语法中有方法的会被多次调用。
+
+    与data和methods不同的是：
+        data和methods中的属性就是直接在vm身上，可以直接通过vm来调用；
+        而计算属性不同在于，computed中的属性是不直接在vm身上的，而是会自动找到get，拿到get的返回值，放在vm身上，只是名字是fullName。
+        因此conputed中的return返回值才在vm身上，而不是fullName对象。
+    
+    Vue给予计算属性的一个设计：
+        计算属性中get  set 方法中的this 就是vm。
+        并且get set不能写成箭头函数，否则this就指window
+
+    计算属性：
+        1.定义：
+            要用的属性不存在，要通过已有属性计算得来。
+        2.原理：
+            底层借助了Objcet.defineproperty方法提供的getter和setter。
+        3.get有什么作用？
+            当有人读取fullName时，get就会被调用，且返回值就作为fullName的值
+            get函数什么时候执行？
+                (1).初次读取时会执行一次。(在依赖数据不变时再次使用不会再调用，因为有缓存)
+                (2).当依赖的数据发生改变时会被再次调用。(依赖的数据 指return中会更改的属性)
+            set什么时候调用? 
+                当fullName被修改时。
+        4.优势：
+            与methods实现相比，内部有缓存机制（复用），效率更高，调试方便。
+        5.备注：
+            1.计算属性最终会出现在vm上，直接读取使用即可。
+            2.如果计算属性要被修改，那必须写set函数去响应修改，且set中要引起计算时依赖的数据发生改变。
+-->
