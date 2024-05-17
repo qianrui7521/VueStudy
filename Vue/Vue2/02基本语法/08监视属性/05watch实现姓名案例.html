@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>watch实现姓名案例</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        姓：<input type="text" v-model="firstname"><br><br>
+        名：<input type="text" v-model="lastname"><br><br>
+        全名：<span>{{fullName}}</span>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                firstname:'张',
+                lastname:'三',
+                fullName:'张-三'
+            },
+            watch:{
+                /*
+                firstname(val){
+                    this.fullName = val + '-' + this.lastname
+                },
+                lastname(val){
+                    this.fullName = this.firstname + '-' + val
+                }
+                */
+                
+                // watch 实现异步任务 
+                // 异步任务需求：当更改姓的时候，需要等1秒后才在页面的全名上体现
+                // 需要加一个定时器
+                firstname(val){
+                    setTimeout(()=>{
+                        this.fullName = val + '-' + this.lastname
+                    }, 1000)
+                },
+                lastname(val){
+                    this.fullName = this.firstname + '-' + val
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+<!--  
+    计算属性 VS 监视属性；
+        计算属性：
+            1.只需要准备 姓firstname  和 名lastname
+            2.全名通过计算属性计算出 fullname
+        监视属性：
+            1.需要准备 姓firstname  名lastname  全名fullName  (从而 firstname lastname fullName 都是属性)
+            2.监视 姓 的同时，还需要监视 名
+    以此案例来看 计算属性比监视属性 实现要好一些
+    但并不是一定都是 计算属性比监视属性实现的都好。
+    比如 当面临异步任务的时候，只能采取监视属性来实现。
+        但是计算属性中无法使用计时器：
+            fullName(){
+                setTimeOut(()=>{
+                    return this.firstname + '-' + this.lastname  // get中的this就是vm
+                }, 1000)
+            }
+            是因为加了计时器后，return写在了计时器中，返回值也交给了setTimeOut，从而导致fullName没有返回值，
+            计算属性依赖的就是返回值，没有返回值从而无法体现在页面中。
+            所以计算属性中是不能开启异步任务来维护数据。
+    计算属性依赖的就是返回值，而watch不同，watch没有返回值依赖的是亲自编写来修改。
+    综上：
+        计算属性和监视属性的采用，区分于
+            1.当计算属性和监视属性都能实现时,采用计算属性
+            2.当面临一些异步任务计算时，就使用监视属性watch
+    
+    Tip:
+        本例中 定时器中的函数不能写成普通函数，否则this就是window，而需要写成箭头函数，定时器中的this才是vm。
+            firstname(val){
+                setTimeout(()=>{
+                    this.fullName = val + '-' + this.lastname
+                }, 1000)
+            },
+            定时器是在firstname中开启的，但是定时器所指定的回调是不受Vue控制的，是由浏览器定时器管理模块控制的，
+            最后定时器到点了也是js引擎所调用，所以定时器中的函数并不是Vue所管理的。
+            并且定时器中的函数要写成箭头函数，是因为当写成普通函数的时候，原本该函数也是js引擎所调用，当调用的时候，
+            this就已经指定了是window，但如果写成箭头函数，虽然也是js引擎调用的函数，箭头函数没有自己的this，
+            于是便往外层寻找，而外层是firstname函数，所以就找到了firstname的this，firstname的函数时普通函数，
+            于是找到的this就是vm。
+
+
+    
+    computed和watch之间的区别：
+        1.computed能完成的功能，watch都可以完成。
+        2.watch能完成的功能，computed不一定能完成，例如：watch可以进行异步操作。
+
+    两个重要的小原则：
+        1.所被Vue管理的函数，最好写成普通函数，这样this的指向才是vm 或 组件实例对象。
+        2.所有不被Vue所管理的函数（定时器的回调函数、ajax的回调函数等、Promise的回调函数），最好写成箭头函数，
+            这样this的指向才是vm 或 组件实例对象。
+        总之目的是让this都指向vm。
+-->

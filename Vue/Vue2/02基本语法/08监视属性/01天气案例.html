@@ -9,10 +9,14 @@
 <body>
     <div id="root">
         <h3>今天天气很{{info}}</h3>
-        <button>切换天气</button>
+        <!-- <h3>今天天气很一般</h3> -->
+
+        <!-- 绑定事件的时候：@xxx="yyy" yyy可以写一些简单的语句，如下： -->
+        <!-- <button @click="isHot = !isHot">切换天气</button> -->
+        <button @click="changeWhether">切换天气</button>
     </div>
     <script type="text/javascript">
-        Vue.config.productionTip = flase
+        Vue.config.productionTip = false
         const vm = new Vue({
             el:'#root',
             data:{
@@ -23,7 +27,23 @@
                     return this.isHot?'炎热':'凉爽'
                 }
             },
+            methods: {
+                changeWhether(){
+                    this.isHot = !this.isHot
+                }
+            },
         })
     </script>
 </body>
 </html>
+<!--  
+    Vue可能存在的一个小bug：
+        当Vue模板中并没有使用到data或者计算属性中的任意数据时，以本次天气案例为例，在模板中没有引用任何的情况下，
+        打开Vue开发者工具，即使点击了 切换天气 ，在开发者工具和页面中并不会体现切换的数据，Vue会认为页面中没有用到，
+        便不会给页面跟新，但实际上是更新了数据的，只是页面中没有体现，可以在vm中调用查看，会发现是更新了。
+    
+    绑定事件的时候：
+        @xxx="yyy" yyy可以写一些简单的语句
+        但是需要注意的是，因为在Vue模板中的代码，Vue都会在vm中查找，如果vm中没有定义就会报错，
+        比如alert，是window的属性，在vm中查找没有找到，便会去Vue的原型对象中查找，还是没有的话就会报错，
+-->

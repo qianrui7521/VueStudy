@@ -4,8 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>监视的简写形式</title>
+    <script type="text/javascript" src="../../vue.js"></script>
 </head>
 <body>
-    
+    <div id="root">
+        <h3>今天天气很{{whether}}</h3>
+        <button @click="changeWhether">切换天气</button>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                isHot:true
+            },
+            computed:{
+                whether(){
+                    return this.isHot?'炎热':'凉爽'
+                }
+            },
+            methods: {
+                changeWhether(){
+                    this.isHot = !this.isHot
+                }
+            },
+            watch:{
+                // 正常写法
+                // isHot:{
+                    // immediate:true,
+                    // deep:true,
+                    // handler(newValue, oldValue){
+                        // console.log('isHot被修改了', newValue, oldValue)
+                    // }
+                // }
+
+                // 简写 (可以简写的的前提是只有handler 没有像imediate deep这些)
+                // isHot(newValue, oldValue){
+                    // console.log('isHot被修改了', newValue, oldValue)
+                // }
+            }
+        })
+        // 正常写法
+        // vm.$watch('isHot', {
+            // immediate:true,
+            // deep:true,
+            // handler(newValue, oldValue){
+                // console.log('isHot被修改了', newValue, oldValue)
+            // }
+        // })
+
+        // 简写 {前提也是只能有handler}
+        vm.$watch('isHot', function(newValue, oldValue){
+            console.log('isHot被修改了', newValue, oldValue)
+        })
+    </script>
 </body>
 </html>
+<!--  
+    由Vue管理的所有函数都必须写成普通函数，不能是箭头函数，
+    否则函数的this 就不是vm而是window
+
+    目前Vue管理的函数：
+        1.所有事件的回调，配置在 methods 中的
+        2.计算属性computed中的get set, 以及简写时候的函数也是
+        3.监视属性中的 handler，以及简写时候的
+-->

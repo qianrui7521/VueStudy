@@ -4,8 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>深度监视</title>
+    <script type="text/javascript" src="../../vue.js"></script>
 </head>
 <body>
-    
+    <div id="root">
+        <h3>今天天气很{{whether}}</h3>
+        <button @click="changeWhether">切换天气</button>
+        <hr>
+        <h3>a的值为：{{test.a}}</h3>
+        <button @click="test.a++">点我a+1</button>
+        <hr>
+        <h3>b的值为：{{test.b}}</h3>
+        <button @click="test.b++">点我b+1</button>
+        <hr>
+        <button @click="test={a:66,b:88}">彻底替换掉test</button>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                isHot:true,
+                test:{
+                    a:0,
+                    b:0
+                }
+            },
+            computed:{
+                whether(){
+                    return this.isHot?'炎热':'凉爽'
+                }
+            },
+            methods: {
+                changeWhether(){
+                    this.isHot = !this.isHot
+                }
+            },
+            watch:{
+                isHot:{
+                    // immediate:true,  // 初始化时让handler调用一下
+                    handler(newValue, oldValue){
+                        console.log('isHot被修改了', newValue, oldValue)
+                    }
+                },
+                // 监视多级结构中某个属性的变化
+                // 'test.a':{  // test.a 是一个不合法的key，需要使用原始的写法 'test.a'
+                    // handler(){
+                        // console.log('a被修改了')
+                    // }
+                // }
+                // 监测多级结构中所有属性的变化
+                test:{
+                    deep:true,
+                    handler(){
+                        console.log('test被修改了')
+                    }
+                }
+            }
+        })
+    </script>
 </body>
 </html>
+<!--  
+    深度监视：
+        (1).Vue中的watch默认不监测对象内部值的改变（一层）。
+        (2).配置deep:true可以监测对象内部值改变（多层）。
+    备注：
+        (1).Vue自身可以监测对象内部值的改变，但Vue提供的watch默认不可以！
+        (2).使用watch时根据数据的具体结构，决定是否采用深度监视。
+        开启深度监视会影响效率。
+-->
