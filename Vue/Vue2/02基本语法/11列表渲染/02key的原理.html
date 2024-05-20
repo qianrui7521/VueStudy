@@ -9,9 +9,13 @@
 <body>
     <div id="root">
         <h3>人员列表</h3>
+        <button @click="add">点我添加人员</button>
         <ul>
-            <li v-for="(p, index) in persons">
+            <!-- <li v-for="(p, index) in persons"> -->
+            <!-- <li v-for="(p, index) in persons" :key="index"> -->
+            <li v-for="(p, index) in persons" :key="p.id">
                 {{p.name}}-{{p.age}}
+                <input type="text">
             </li>
         </ul>
     </div>
@@ -26,6 +30,12 @@
                     {id:'003', name:'小赵', age:'18'},
                 ]
             },
+            methods:{
+                add(){
+                    const p = {id:'004', name:'小刘', age:'30'}
+                    this.persons.unshift(p)
+                }
+            }
         })
     </script>
 </body>
