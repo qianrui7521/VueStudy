@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>条件渲染</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h3>当前n的值为:{{number}}</h3>
+        <button @click="addNumber">点我加一</button>
+
+        <!-- 使用v-show做条件渲染 -->
+        <!-- <h3 v-show="false">欢迎来到{{address}}</h3> -->
+        <!-- <h3 v-show="1===2">欢迎来到{{address}}</h3> -->
+
+        <!-- 使用v-show做条件渲染 -->
+        <!-- <h3 v-if="false">欢迎来到{{address}}</h3> -->
+        <!-- <h3 v-if="1===2">欢迎来到{{address}}</h3> -->
+
+        <!-- v-else 和 v-else-if -->
+        <div v-if="number===1">***1</div>
+        <div v-if="number===1">***1</div>
+        <div v-else-if="number===2">***2</div>
+        <div v-else-if="number===3">***3</div>
+        <div v-else>***0</div>
+        <!-- 
+            v-if可以和:v-else-if、v-else一起使用，
+            但要求结构不能被“打断”，
+            如果中间插入了其他的代码，
+            则从插入代码后的v-else-if 和 v-else 会报错
+        -->
+
+        <!-- v-if与template的配合使用 -->
+        <template v-if="number===6">
+            <h3>你好</h3>
+            <h3>世界</h3>
+            <h3>你好</h3>
+            <h3>未来</h3>
+        </template>
+        
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                number:0,
+                address:'湖北'
+            },
+            methods: {
+                addNumber(){
+                    this.number++
+                }
+            },
+        })
+    </script>
+</body>
+</html>
+
+<!--  
+    条件渲染：
+        1.v-if
+            写法：
+                (1).v-if="表达式" 
+                (2).v-else-if="表达式"
+                (3).v-else="表达式"
+            适用于：切换频率较低的场景。
+            特点：不展示的DOM元素直接被移除。
+            注意：v-if可以和:v-else-if、v-else一起使用，但要求结构不能被“打断”。
+                如果中间插入了其他的代码，则从插入代码后的v-else-if 和 v-else 会报错
+
+        2.v-show
+            写法：v-show="表达式"
+            适用于：切换频率较高的场景。
+            特点：不展示的DOM元素未被移除，仅仅是使用样式隐藏掉
+                底层其实执行的就是 display: none;
+        3.备注：
+            使用v-if的时，元素可能无法获取到，而使用v-show一定可以获取到。
+    
+    避免破坏结构，使用 template 模板
+        不影响结构，当页面渲染的时候，会自动将template剃掉。
+        v-if 可以和 template 配合使用，但 v-show 不行。
+-->
