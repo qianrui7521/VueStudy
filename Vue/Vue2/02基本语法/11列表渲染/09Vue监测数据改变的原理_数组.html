@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue监测数据改变的原理_数组</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h2>学校信息</h2>
+        <h3>学校名称：{{sclool.name}}</h3>
+        <h3>学校地址：{{sclool.address}}</h3>
+        <h3>校长：{{sclool.leader}}</h3>
+        <hr>
+        <h2>学生信息</h2>
+        <button @click="addSex">添加学生性别</button>
+        <h3>学生姓名：{{student.name}}</h3>
+        <h3 v-if="student.sex">学生性别：{{student.sex}}</h3>
+        <h3>学生年龄：真实{{student.age.rAge}}, 对外{{student.age.sAge}}</h3>
+        <h3>爱好</h3>
+        <ul>
+            <li v-for="(h, index) in student.hobby" :key="index">{{h}}</li>
+        </ul>
+        <h3>朋友们</h3>
+        <ul>
+            <li v-for="(f, index) in student.friends" :key="index">{{f.name}}--{{f.age}}</li>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                sclool:{
+                    name:'尚硅谷',
+                    address:'上海',
+                    leader:'王'
+                },
+                student:{
+                    name:'Tom',
+                    age:{
+                        rAge:30,
+                        sAge:18
+                    },
+                    hobby:['打球', '打游戏', '学习', '看书'],
+                    friends:[
+                        {name:'cc', age:20},
+                        {name:'yy', age:22}
+                    ]
+                }
+            },
+            methods: {
+                addSex(){
+                    Vue.set(this.student, 'sex', '男')
+                }
+            },
+        })
+    </script>
+</body>
+</html>
+<!--  
+    hobby:['打球', '打游戏', '学习', '看书'],
+    在vm._data中，hobby是一个数组Array，与对象不同，没有对应索引的getter和setter方法，Vue不知道有没有修改，
+    因此，对于 数组，是无法通过索引修改数据来达到响应页面的效果，因为虽然修改了，在_data中也更新了，但是
+    Vue不认(没有监测到)，也就是不会在页面上更新修改的结果。
+    Vue不能监测 直接通过索引值来修改数组里的数据，是因为数组中的每个元素不是通过seter和getter来监视的，而是：
+        push 在末尾新增一个元素
+        pop  在末尾删除一个元素
+        shift 删除第一个元素
+        unshift 在开始添加一个元素
+        splice 向数组中指定位置插入(删除)一个元素或替换掉指定位置的某个元素
+        sort  对数组排序
+        reverse  反转数组
+        以上方法都是破坏性的，一旦调用就会影响数组本身。假如想调用filter，因为他不是一个破坏性的方法，所以需要重新复制给原数组。
+        Vue监视数组，是通过看是否调用了上面七个中任意一个方法。  
+
+    便解释了之前 更新时的一个问题 中 马冬梅更新马老师更不掉的原因，
+        是因为this.persons[0] = {id:'001',name:'马老师',age:60,sex:'男'} 直接操作了索引值，使用复制的方式更新，
+        Vue监测不到。
+
+    Vue是如何监测到了有没有调用那七个方法的：
+        Vue使用了一个技术 包装，
+        当通过Vue调用 那些方法时，那些方法就不是原本的方法了，比如push，vm._data.student.hobby.push('学习') 调用之后，
+            已经不是原本的Array.prototype.push()原型对象中的push了。
+            如果是自己定义的数组，来调用push，那么它就会找到Array原型对象中的push。
+            如果经Vue管理，就不是正常原型中的push，调用vm._data.student.hobby.push === Array.protptype.psuh 后返回false。
+            经过Vue管理后，push就被Vue重新编写，这时候通过hobby找，找到的就不是正常的原型对象中的push，首先找到的是Vue写的push
+            在Vue中的push, 有两部分组成：
+                ①先调用正常数组Array原型中的push方法
+                ②重新解析模板，生成虚拟DOM...
+                故Vue对数组的监测，实际上是靠包装数组上的常用修改数组的方法实现的，从而触发视图更新。
+    
+    除了上述七个方法来实现监视数组，还可以通过Vue.set来实现：
+        Vue.set(vm._data.student.hobby, 1, '跑步')
+        vm.$set(vm._data.student.hobby, 1, '跑步')
+-->

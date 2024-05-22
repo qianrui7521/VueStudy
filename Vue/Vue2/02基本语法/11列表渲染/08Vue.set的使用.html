@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.set的使用</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h2>学校信息</h2>
+        <h3>学校名称：{{name}}</h3>
+        <h3>学校地址：{{address}}</h3>
+        <h3>校长：{{leader}}</h3>
+        <hr>
+        <h2>学生信息</h2>
+        <button @click="addSex">添加学生性别</button>
+        <h3>学生姓名：{{student.name}}</h3>
+        <h3 v-if="student.sex">学生性别：{{student.sex}}</h3>
+        <!-- 
+            当没添加之前，读取一个对象里面不存在的属性值，返回的是undefined，不会报错 
+            并且Vue在显示的时候，如果是undefined 是不会显示在页面中，
+            但如果student不存在，就会报错
+        -->
+        <h3>学生年龄：真实{{student.age.rAge}}, 对外{{student.age.sAge}}</h3>
+        <h3>朋友们</h3>
+        <ul>
+            <li v-for="(f, index) in student.friends" :key="index">{{f.name}}--{{f.age}}</li>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                name:'尚硅谷',
+                address:'上海',
+                student:{
+                    name:'Tom',
+                    age:{
+                        rAge:30,
+                        sAge:18
+                    },
+                    friends:[
+                        {name:'cc', age:20},
+                        {name:'yy', age:22}
+                    ]
+                }
+            },
+            methods: {
+                addSex(){
+                    // 写法一：Vue.set
+                    // Vue.set(this.student, 'sex', '男')
+                    // 写法二：vm.$set
+                    this.$set(this.student, 'sex', '女')
+                }
+            },
+        })
+    </script>
+</body>
+</html>
+<!--  
+    Vue.set vm.$set 均可以添加属性，并且添加的属性也是响应式的，有getter和setter。
+    但是存在局限性：
+        Vue.set只能给data里的某个对象(该对象不能是Vue实例或者Vue实例的根数据对象data/_data)追加属性，
+            而不能给data以及vm身上追加属性，否则会报错
+        比如在data中添加属性校长，Vue.set(vm._data, 'leader', '张老师')
+            会报错：[Vue warn]: Avoid adding reactive properties to a Vue instance 
+        解决方法：可以在需要追加的属性外层添加一个对象将其包裹起来。
+        
+-->
