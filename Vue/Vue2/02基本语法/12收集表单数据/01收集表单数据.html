@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收集表单数据</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <form @submit.prevent="sub">
+            <label for="demo">账号：</label><input type="text" id="demo" v-model.trim="userInfo.account"><br>
+            密码：<input type="password" v-model="userInfo.psw"><br>
+            性别：
+            男<input type="radio" name="sex" v-model="userInfo.gender" value="male">
+            女<input type="radio" name="sex" v-model="userInfo.gender" value="female">
+            <br>
+            年龄：<input type="number" v-model.number="userInfo.age"><br>
+            爱好：
+            学习<input type="checkbox" v-model="userInfo.hobby" value="study">
+            画画<input type="checkbox" v-model="userInfo.hobby" value="paint">
+            打游戏<input type="checkbox" v-model="userInfo.hobby" value="game"><br>
+            所属校区：
+            <select v-model="userInfo.city">
+                <option>请选择校区</option>
+                <option value="beijing">北京</option>
+                <option value="shanghai">上海</option>
+                <option value="wuhan">武汉</option>
+            </select><br>
+            其他信息：
+            <textarea v-model.lazy="userInfo.other"></textarea><br>
+            <input type="checkbox" v-model="userInfo.agree">阅读并接受<a href="https://www.baidu.com">《用户协议》</a><br>
+            <button>提交</button>
+        </form>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                account:'',
+                psw:'',
+                gender:'femail',
+                age:'',
+                // hobby:[],
+                // city:'beijing',
+                // other:'',
+                // agree:'',
+                userInfo:{
+                    gender:'femail',
+                    age:'',
+                    hobby:[],
+                    city:'beijing',
+                    other:'',
+                    agree:''
+                }
+            },
+            methods: {
+                sub(){
+                    // console.log(JSON.stringify(this._data))
+                    // 如果不直接在代码中访问_data 就将data下的属性再包裹一层
+                    // 比如都放在 userInfo中 但在模板中所有用到的都要更改成 userInfo.
+                    console.log(JSON.stringify(this.userInfo))
+                }
+            },
+        })
+    </script>
+</body>
+</html>
+<!--  
+    单选框 ：
+        比如性别 二选一 由name属性来控制 需要设置name值告知是一组
+        v-model 绑定性别时  由于v-model默认收集的是value的值 此时性别中没有value值 故为null 
+            解决；给性别设置value值
+    多选框：
+        比如爱好 多选如果在Vue中 hobby 设置字符串的话 默认读取的就是某个标签的checked 收集的就是checked
+        当勾选一个另外的都会被自动勾选 这是因为hobby一个控制多个多选框  当勾选了一个 hobby的值就会变成checked 
+        v-model双向绑定 hobby收集到的值是布尔值为true 于是数据改变页面又有用到的地方就会改变 就会将其他的多选框都勾选
+            解决：给多选框都指定value值 （不设置 默认收集的就是 checked）
+                并且由于 hobby初始值可以影响着v-model收集回来的数据 要将v-model绑定的hobby设置成数组。
+        需要具体情况具体分析 比如 agree
+
+    当点击button提交的时候，会引起表单的提交，表单的提交后默认的动作就是跳转页面，假如不想跳转：
+        解决一：给button添加一个点击事件，其中阻止默认行为
+        解决二：给form绑定事件，当点击button的时候绝对触发了表单的提交，表单已提交，就可以给表单绑定@submit,
+            表单跳转页面是表单跳转的默认行为，那么就可以阻止默认行为，添加事件修饰符 .prevent 阻止默认行为。
+
+    v-model 也有修饰符：
+        ① .number
+        ② .lazy  不是实时的收集，是在失去焦点的一瞬间再收集。
+        ③ .trim  去掉前后的空格
+        正常 模板中的年龄写法：年龄：<input type="number" v-model="userInfo.age">
+        type="number" 只能阻止输入框中输入的是只能是数字不能是字母，是原生html中就有的，
+        这样的话在Vue中会年龄是带引号的，也就是是一个字符串而不是数值型，如果后面的工作中不做强制转换有可能会报错，
+        于是可以给v-model后加上一个修饰符 .number  将收集到的数据转换成数值， 是Vue提供的。
+        如果 type="text" v-model.number  虽然输入可以是字母，但也会阻止获取字母， 比如输入3a0 只会获取3.
+        type="number" v-model=.number 一般同时使用
+
+    
+    收集表单数据：
+        若：<input type="text"/>，则v-model收集的是value值，用户输入的就是value值。
+        若：<input type="radio"/>，则v-model收集的是value值，且要给标签配置value值。
+        若：<input type="checkbox"/>
+            1.没有配置input的value属性，那么收集的就是checked（勾选 or 未勾选，是布尔值）
+            2.配置input的value属性:
+                (1)v-model的初始值是非数组，那么收集的就是checked（勾选 or 未勾选，是布尔值）
+                (2)v-model的初始值是数组，那么收集的的就是value组成的数组
+        备注：v-model的三个修饰符：
+                lazy：失去焦点再收集数据
+                number：输入字符串转为有效的数字
+                trim：输入首尾空格过滤
+-->

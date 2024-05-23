@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script type="text/javascript" src="../../vue.js"></script>
+    <script type="text/javascript" src="../../dayjs.min.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h3>显示格式化后的时间</h3>
+        <!-- 计算属性实现 -->
+        <h3>现在是：{{fomDate}}</h3>
+        <!-- methods实现 -->
+        <h3>现在是：{{getFomDate()}}</h3>
+        <!-- 过滤器实现 -->
+        <h3>现在是：{{time | timeFormater}}</h3>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                time:Date.now()  // 时间戳
+            },
+            computed:{
+                fomDate(){
+                    return dayjs(this.time).format('YYYY年MM月DD日 HH:mm:ss')
+                }
+            },
+            methods: {
+                getFomDate(){
+                    return dayjs(this.time).format('YYYY年MM月DD日 HH:mm:ss')
+                }
+            },
+            filters:{
+                timeFormater(value){
+                    console.log(value)  // value就是time
+                    return dayjs(value).format('YYYY年MM月DD日 HH:mm:ss')
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+<!-- 
+    bootcdn  提供第三方库的网站
+        Moment.js 是一个 JavaScript 日期处理类库，用于解析、检验、操作、以及显示日期。————比较大  
+        Day.js 是一个轻量的处理时间和日期的 JavaScript 库，和 Moment.js 的 API 设计保持完全一样. 
+                如果您曾经用过 Moment.js, 那么您已经知道如何使用 Day.js
+
+    过滤器 本质就是一个函数 能对数据进行加工
+        {{time | timeFormater}} 由Vue来执行，首先Vue捕获到{{time | timeFormater}}，读取time，
+        随后将time作为参数传给了timeFormater，由Vue来帮忙调用，随后Vue便拿到了返回值，最后将整个
+        {{time | timeFormater}} 给替换成返回值，最终实现解析。
+        过滤器也可以传递参数
+-->
