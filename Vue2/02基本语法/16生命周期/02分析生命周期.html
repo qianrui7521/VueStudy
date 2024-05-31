@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析生命周期</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h2>当前的n值为：{{n}}</h2>
+        <button @click="add">点我n加一</button>
+        <button @click="bye">点我销毁vm</button>
+    </div>
+</body>
+<script type="text/javascript">
+    Vue.config.productionTip = false
+    // 1.创建Vue实例
+    const vm = new Vue({
+        // 2.初始化：生命周期、事件，但数据代理还未开始
+        el:'#root',
+        // template:`
+        // <div>
+            // <h2>当前的n值为：{{n}}</h2>
+            // <button @click="add">点我n加一</button>
+        // </div>
+        // `,
+        data:{
+            n:1
+        },
+        methods: {
+            add(){
+                console.log('add')
+                this.n++
+            },
+            bye(){
+                console.log('bye')
+                this.destroy()
+            }
+        },
+        // 3.beforeCreate 无法通过vm访问到data中的数据，methods中的方法。
+        beforeCreate() {
+            console.log('beforeCreate')
+            // console.log(this)
+            // debugger
+        },
+        // 4.初始化：数据监测、数据代理
+        // 5.created 可以通过vm访问到data的数据、methods中配置的方法
+        created() {
+            console.log('created')
+            // console.log(this)
+            // debugger
+        },
+        // 6.此阶段Vue开始解析模板，生成虚拟DOM(内存中)，页面还不能显示解析好的内容
+        // 7.beforeMount 1.页面呈现的是未经Vue编译的DOM结构。2.所有对DOM的操作，最终都不奏效
+        beforeMount() {
+            console.log('beforeMount')
+            // console.log(this)
+            // debugger
+        },
+        // 8.将内存中的虚拟DOM转为真实DOMDOM插入页面
+        // 9. mounted挂在完毕
+        mounted() {
+            console.log('mounted')
+            // console.log(this)
+            // debugger
+        },
+        beforeUpdate() {
+            console.log('beforeUpdate')
+            // console.log(this.n)
+            // debugger
+        },
+        updated() {
+            console.log('updated')
+            // console.log(this.n)
+            // debugger            
+        },
+    })
+</script>
+</html>
+<!--  
+    分析生命周期：
+        1.new VUe()
+        2.Init Event & Lifecycl
+            初始化：生命周期、事件，但数据代理还未开始
+        3.beforeCreate 生命周期函数
+            此时，无法通过vm访问到data中的数据，methods中的方法。
+        4.Init injection & reactivity
+            初始化：数据监测、数据代理
+        5.created  生命周期函数
+            此时，可以通过vm访问到data的数据、methods中配置的方法
+        6.此阶段Vue开始解析模板，生成虚拟DOM(内存中)，页面还不能显示解析好的内容
+            判断是否有 el 选项
+            -> YES  直接判断是否有 template 选项
+            -> NO 执行 vm.$mount('#root')
+            判断是否有 template 选项
+                -> NO  Compole el's outerHTML as template  将root所在div整个解析成模板
+                -> YES  Compile template into render function
+                        可以不在容器中编写代码，而在template 配置项(与el同级)中编写，template值是字符串，
+                        语法：
+                            一种是使用字符串编写，但要写在一行，否则报错；
+                            第二种是用模板字符串``.且要用一个div(不能使用tamplate标签否则报错)包裹起来，否则会报错
+                        使用template选项，里边的代码会替换掉带root的div。
+
+        7.beforeMount 生命周期函数
+            此时，1.页面呈现的是未经Vue编译的DOM结构。2.所有对DOM的操作，最终都不奏效
+        8.Create vm.$el and replace 'el' with it
+            将内存中的虚拟DOM转为真实DOMDOM插入页面
+            vm.$el  Vue自己存了一份DOM信息，便于与新DOM作比较。
+        9.mounted  生命周期函数
+            此时，1.页面呈现的是经过Vue编译的DOM结构。2.对DOM的操作均有效(尽可能避免)，至此初始化过程结束，
+                一般再次进行：开启定时器、发送网络请求、订阅消息、绑定自定义事件等初始化操作，
+        10.when data changes 一旦data中的数据被改 -> Virtual DOM re-render and patch -> update
+            beforeUpdate 生命周期函数
+            此时，数据是新的，但页面是旧的，即：页面尚未和数据保持同步
+        11.Virtual DOM re-render and patch
+            根据新数据，生成新的虚拟DOM，随后于旧的虚拟DOM进行比较，最终完成页面更新，即：完成 Model->View的更新
+        12.updated  生命周期函数
+            此时，数据是新的，页面也是新的，即：页面和数据保持同步
+        13.一旦调用了 vm.$destroy() vm就会自动销毁 
+            注意：
+                1.vm虽然销毁了，但vm的工作成果还在
+                2.完全销毁一个实例。清理它与其它组件实例对象的连接，解绑它的全部指令及事件(指自定义事件而不是DOM事件)监听器。
+            beforeDestroy 生命周期函数
+                此时，vm中所有的data methods 指令等，都处于可用状态(可以调用可以修改但不会触发更新)，马上要执行销毁过程，
+                一般在此阶段，关闭定时器，取消订阅消息，接触自定义事件等收尾操作。
+        14.Teardown watchers, child components and event listeners
+        15.destroyed 生命周期函数
+-->

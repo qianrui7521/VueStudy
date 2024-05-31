@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对象式自定义指令</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h3>{{name}}</h3>
+        <h2>当前的n值是：<span v-text="n"></span></h2>
+        <h2>放大十倍后的n值是：<span v-big-number="n"></span></h2>
+        <button @click="n++">点我n加1</button>
+        <hr>
+        <!-- <input type="text" v-fbind:value="n"> -->
+        <input type="text" v-fbind-all:value="n">
+    </div>
+    <div id="root2">
+        <!-- <input type="text" v-fbind:value="x">  -->
+        <input type="text" v-fbind-all:value="x"> 
+        <!-- root2 不能使用 root1 中的局部指令 -->
+    </div>
+</body>
+<script type="text/javascript">
+    Vue.config.productionTip = false
+
+    // 定义全局指令
+    Vue.directive('fbind-all', {
+        bind(element, binding){
+            element.value = binding.value
+        },
+        inserted(element, binding){
+            element.focus()
+        },
+        update(element, binding){
+            element.value = binding.value
+        }
+    })
+
+    const vm = new Vue({
+        el:'#root',
+        data:{
+            name:'hello',
+            n:'1'
+        },
+        directives:{
+            'big-number'(element, binding){
+                // console.log(element)
+                // console.log(binding)
+                // console.log('big')
+                element.innerText = binding.value*10
+            },
+            /*
+            fbind(element, binding){
+                element.value = binding.value
+                element.focus()  // 参函数式定义的调用情况，绑定时并没有将input元素显示在页面中，因此这时候执行不起作用
+            }
+            */
+            fbind:{
+                // 指令与元素成功绑定时（一上来）
+                bind(element, binding){
+                    // console.log('初始绑定')
+                    element.value = binding.value
+                },
+                //指令所在元素被插入页面时
+                inserted(element, binding){
+                    // console.log('页面展示')
+                    element.focus()
+                },
+                // 指令所在的模板被重新解析时
+                update(element, binding){
+                    // console.log('模板解析(数据更新)')
+                    element.value = binding.value
+                    element.focus()
+                }
+            }
+        }
+    })
+    new Vue({
+        el:'#root2',
+        data:{
+            x:'1'
+        }
+    })
+</script>
+</html>
+<!--  
+    需求2：定义一个v-fbind指令，和v-bind功能类似，但可以让其所绑定的input元素默认获取焦点。
+    必须使用对象式实现，函数式实现会出现初始化时input元素没有获取焦点的情况。
+    由于函数式定义时是在 指令与元素成功绑定时（一上来）或者指令所在的模板被重新解析时 会被调用，
+    并且函数式会将获取焦点的API写在函数中，而当 指令于元素绑定时 也就是初始化时调用了fbind函数，
+    这时候 input框并没有反映在页面中，因此focus整个API不起作用，就导致开始n为1的时候input框没有获得焦点。
+    于是，只能对象式定义来实现该要求。
+    element.focus() 代码没问题，只是执行的时机不对，见例子 03.回顾一个DOM操作.html
+
+    对象式定义：(时间点划分的很细)
+        fbind；中会有很多个函数，关键的时间点Vue会调用关键的函数
+            比如常用的 
+                bind    指令与元素成功绑定时（一上来）
+                insered  指令所在元素被插入页面时
+                update  指令所在的模板被重新解析时
+    函数式定义就相当于对象式定义的简写版，只有 bind 和 update 没有inserted,
+    因此如果需要 获取焦点或者获取父元素等的时候要采用对象式定义指令。
+
+    避坑：
+        1. 指令的命名
+            v-big
+            v-big-number 不建议写 v-bigNumber
+            在derectives里:
+                如果是 v-big 就写 big
+                如果是 v-big-number 就写 'big-number' 不能写 bigNmuber 会报错
+        2. this 问题
+            不管是函数式定义还是对象式定义的指令，其中的this 都指的是 window 而不是vm
+            所有指令中的即使是箭头函数，其中的this 都指的是window对象
+        3. 局部指令
+            本例中的 'big-number' fbind 都是局部指令
+            只能给当前的Vue实例对象使用，其他的Vue实例用不了。
+            要想使用 可定义全局指令：
+                Vue.directive('指令名', {内容})  ———对象式
+                Vue.directive('指令名', function(element, binding){内容})
+
+
+    自定义指令总结：
+        一、定义语法：
+            (1).局部指令：
+                        new Vue({                                 new Vue({
+                            directives:{指令名:配置对象}   或           directives{指令名:回调函数}
+                        })                                        })
+            (2).全局指令：
+                            Vue.directive(指令名,配置对象) 或   Vue.directive(指令名,回调函数)
+
+        二、配置对象中常用的3个回调：
+            (1).bind：指令与元素成功绑定时调用。
+            (2).inserted：指令所在元素被插入页面时调用。
+            (3).update：指令所在模板结构被重新解析时调用。
+
+        三、备注：
+            1.指令定义时不加v-，但使用时要加v-；
+            2.指令名如果是多个单词，要使用kebab-case命名方式，不要用camelCase命名。
+-->

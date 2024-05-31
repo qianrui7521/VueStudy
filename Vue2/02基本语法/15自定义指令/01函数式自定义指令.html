@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>函数式自定义指令</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h3>{{name}}</h3>
+        <h2>当前的n值是：<span v-text="n"></span></h2>
+        <h2>放大十倍后的n值是：<span v-big="n"></span></h2>
+        <button @click="n++">点我n加1</button>
+    </div>
+</body>
+<script type="text/javascript">
+    Vue.config.productionTip = false
+    const vm = new Vue({
+        el:'#root',
+        data:{
+            name:'hello',
+            n:'1'
+        },
+        directives:{
+            big(element, binding){
+                // console.log(element)
+                // console.log(binding)
+                console.log('big')
+                element.innerText = binding.value*10
+            }
+        }
+    })
+</script>
+</html>
+<!--  
+    需求1：定义一个v-big指令，和v-text功能类似，但会把绑定的数值放大10倍。
+
+    指令是不能脱离元素存在的, 指令就是在操作DOM元素
+    有两个情况是没有前缀v-的：
+        ①是代码写错了，报错是不带v-的 直接是big 
+        ②定义自定义指令时名字不带v- 直接是big
+    自定义指令会收到两个参数：
+        ①element  真实DOM元素  eg:<span>10</span>
+        ②binding 绑定  是一个对象 关注对象中的value 是v-big用到的值n的值 
+            eg:{name: 'big', rawName: 'v-big', value: '1', expression: 'n', modifiers: {…}, …}
+                def: {bind: ƒ, update: ƒ}
+                expression: "n"
+                modifiers: {}
+                name: "big"
+                rawName: "v-big"
+                value: "1"
+                [[Prototype]]: Object
+            区别于v-bind 绑定：
+                v-bind 是给标签里的某个属性绑定值用的
+                binding 是元素和指令之间关联关系用的
+    big函数何时会被调用？
+        1.指令与元素成功绑定时（一上来）。
+        2.指令所在的模板被重新解析时。
+-->

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回顾一个DOM操作</title>
+</head>
+<body>
+    <button>点我新建一个输入框</button><br><br>
+    <script>
+        const btn = document.querySelector('button')
+        btn.onclick = ()=>{
+            const ipt = document.createElement('input')
+
+            ipt.style.backgroundColor = 'yellow'
+            ipt.value = 10
+            ipt.onclick = ()=>{alert(1)}
+
+            // ipt.focus()
+            // console.log(ipt.parentElement)
+            // ipt.parentElement.style.backgroundColor = 'green'
+
+            document.body.appendChild(ipt)
+
+            ipt.focus()
+            console.log(ipt.parentElement)
+            ipt.parentElement.style.backgroundColor = 'green'
+
+            // ipt.focus() 的顺序影响执行的结果
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v-cloak指令</title>
+    <style>
+        /* 
+            属性选择器
+            选中所有标签里有v-cloak属性的元素
+        */
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <!-- <script type="text/javascript" src="../../vue.js"></script> -->
+</head>
+<body>
+    <div id="root">
+        <h3 v-cloak>{{name}}</h3>
+    </div>
+    <script type="text/javascript" src="../../vue.js"></script>
+</body>
+<script type="text/javascript">
+    Vue.config.productionTip = false
+    const vm = new Vue({
+        el:'#root',
+        data:{
+            name:'你好啊'
+        },
+    })
+</script>
+</html>
+<!--  
+    当网络较慢，网页还在加载 Vue.js ，而导致 Vue 来不及渲染，这时页面就会显示出 Vue 源代码。
+        可以使用 v-cloak 指令来解决这一问题。
+
+    v-cloak指令（没有值）：
+        1.本质是一个特殊属性，Vue实例创建完毕并接管容器后，会删掉v-cloak属性。
+        2.使用css配合v-cloak可以解决网速慢时页面展示出{{xxx}}的问题。
+-->
