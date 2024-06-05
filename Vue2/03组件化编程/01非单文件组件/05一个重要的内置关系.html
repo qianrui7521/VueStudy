@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一个重要的内置关系</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <student></student>  
+        <!-- 创建组件标签 就创建一个新的 Vuecomponent实例 -->
+    </div>
+</body>
+<script type="text/javascript">
+    Vue.config.productionTip = false
+    
+    /*
+        // 回顾原型对象
+        // 定义一个构造函数
+        function Demo(){
+            this.a = 1
+            this.b = 2
+        }
+        // 创建一个Demo的实例对象
+        const d = new Demo()
+        // 只要是函数 一定会有一个属性：prototype 也叫显示原型属性
+        console.log(Demo.prototype)
+        // 由构造函数缔造出来的实例对象 一定会有一个属性：__proto__ 也叫隐式原型属性
+        console.log(d.__proto__)
+        // 函数身上的显示原型属性 和 实例身上的隐式原型属性 都指向一个对象 该对象称之为 原型对象
+        // 程序员通过显示原型属性操作原型对象，追加一个x属性，值为99
+        Demo.prototype.x = 99
+        // 我们设置属性是通过显示原型属性  代码是沿着隐式原型属性查找执行
+        console.log(Demo.prototype === d.__proto__)  // 返回true
+        console.log('d.__proto__.x=', d.__proto__.x)
+        console.log('d.x=', d.x)
+        console.log('d', d)
+        // 函数才配拥有prototype  实例有__proto__  实例是不能用prototype的
+        // 实例的隐式原型属性永远指向其缔造者的原型对象
+    */
+    
+    Vue.prototype.x = 99
+    const student = Vue.extend({  // 通过Vue.extend 生成VueComponent
+        template:`
+            <div>
+                <h2>学生信息</h2>
+                <h2>学生姓名：{{name}}</h2>
+                <h2>学生年龄：{{age}}</h2>
+                <button @click="showX">点我提示X</button>
+            </div>
+        `,
+        data(){
+            return {
+                name:'cherry',
+                age:18
+            }
+        },
+        methods: {
+            showX(){
+                console.log(this.x)  
+            }
+        },
+    })
+    const vm = new Vue({
+        el:'#root',
+        data:{
+            
+        },
+        components:{
+            student
+        }
+    })
+    console.log(student.prototype.__proto__ === Vue.prototype)
+</script>
+</html>
+<!--  
+    1.一个重要的内置关系：VueComponent.prototype.__proto__ === Vue.prototype
+    2.为什么要有这个关系：让组件实例对象（vc）可以访问到 Vue原型上的属性、方法。
+-->

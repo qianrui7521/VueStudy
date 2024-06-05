@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VueComponent构造函数</title>
+    <script type="text/javascript" src="../../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <student></student>
+        <hello></hello>
+    </div>
+</body>
+<script type="text/javascript">
+    Vue.config.productionTip = false
+    const student = Vue.extend({
+        template:`
+            <div>
+                <h2>学生信息</h2>
+                <h2>学生姓名：{{name}}</h2>
+                <h2>学生年龄：{{age}}</h2>
+                <button @click="showName">点我提示学生姓名</button>
+            </div>
+        `,
+        data(){
+            return {
+                name:'cherry',
+                age:18
+            }
+        },
+        methods: {
+            showName(){
+                // alert(this.name)
+                console.log(this)  // 此处的this 是VueComponent
+            }
+        },
+    })
+    const test = Vue.extend({
+        template:`
+            <div>
+                <span>how are you</span>
+            </div>
+        `,
+    })
+    const hello = Vue.extend({
+        template:`
+            <div>
+                <h2>{{msg}}</h2>
+                <test></test>
+            </div>
+        `,
+        data(){
+            return {
+                msg:'好好学习'
+            }
+        },
+        components:{
+            test
+        }
+    })
+    // console.log('@@@', student)
+    // console.log('###', hello)  // student 和 hello 是两个不同的 VueComponent
+    const vm = new Vue({
+        el:'#root',
+        data:{
+            
+        },
+        components:{
+            student,
+            hello
+        }
+    })
+</script>
+</html>
+<!--  
+    关于VueComponent：
+        1.school组件本质是一个名为VueComponent的构造函数，且不是程序员定义的，是Vue.extend生成的。
+
+        2.我们只需要写<school/>或<school></school>，Vue解析时会帮我们创建school组件的实例对象，
+            即Vue帮我们执行的：new VueComponent(options)。
+
+        3.特别注意：每次调用Vue.extend，返回的都是一个全新的VueComponent！！！！
+
+        4.关于this指向：
+            (1).组件配置中：
+                data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是【VueComponent实例对象】。
+            (2).new Vue(options)配置中：
+                data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是【Vue实例对象】。
+
+        5.VueComponent的实例对象，以后简称vc（也可称之为：组件实例对象）。
+            Vue的实例对象，以后简称vm。
+-->
