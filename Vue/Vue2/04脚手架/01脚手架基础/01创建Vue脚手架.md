@@ -23,4 +23,4 @@ CLI: commend line interface 命令行接口工具
         完成后会提示：
             App running at:
             - Local:   http://localhost:8081/  (自己访问)
-            - Network: unavailable  (给其他疼访问)
+            - Network: unavailable  (给其他人访问)
