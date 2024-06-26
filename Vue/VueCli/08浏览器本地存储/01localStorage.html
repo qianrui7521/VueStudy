@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器本地存储</title>
+</head>
+<body>
+    <h3>localStorage</h3>
+    <button onclick="saveData()">点我保存一个数据</button>
+    <button onclick="readData()">点我读取本地存储</button>
+    <button onclick="deleteData()">点我删除一个数据</button>
+    <button onclick="clearData()">点我清空所有数据</button>
+    
+    <script type="text/javascript">
+        let p = {name:'cherry', age:18}
+        // console.log(p.toString())  // 控制台显示：[object Object]
+
+        function saveData(){
+            localStorage.setItem('msg', 'hello')  // window.localStorage  window可省略
+            localStorage.setItem('msg2', 666)
+            // localStorage.setItem('p', p) // 如果直接使用p，value会直接显示[object Object]，因此需要解析一下
+            localStorage.setItem('p', JSON.stringify(p))
+        }
+
+        function readData(){
+            console.log(localStorage.getItem('msg'))
+            console.log(localStorage.getItem('msg2'))
+
+            console.log(localStorage.getItem('p'))  // 返回的是一串字符串 需要解析为认识的对象
+            let result = localStorage.getItem('p')
+            console.log(JSON.parse(result))
+
+            console.log(localStorage.getItem('msg3'))  // 返回 null
+            let result2 = localStorage.getItem('msg4')
+            console.log(JSON.parse(result2))   // 返回 null
+        }
+
+        function deleteData(){
+            localStorage.removeItem('msg2')
+        }
+
+        function clearData(){
+            localStorage.clear()
+        }
+
+        /* 
+            localStorage 是window身上的  window.localStorage  window可省略
+
+            API：setItem('key', 'value')
+                其中 key value 都是字符串，如果value设置的不是字符串，默认会调用toString()方法 变成字符串。
+                对象调toString()方法后是[object Object]，并不知道里面的具体内容，因此可以给对象调用JSON.stringify()方法，
+                    JSON.stringify() 能把一个对象变成字符串的形式并且能体现里边的内容。
+
+            API: getItem('key')
+                可以得到一个返回值，也是字符串
+                如果读取到的是个对象，最好解析一下更明显一些，JSON.parse()方法解析
+                当读取到的是一个不存在的key，返回的结果是null，那么如果null再调用了JSON.parse()方法后结果还是null。
+                    JSON.parse(null) ==> null
+
+            API: removeItem('key')
+                移除一个数据
+
+            API: clear()
+                清除所有数据
+
+            localStorage 最大的特点是关掉该浏览器网页后，数据也不会丢失。
+            localStorage中有两种情况保存的数据会丢失：
+                ①是引导了用户操作了某个API(remove/clear)
+                ②是用户主动清空缓存
+        */
+    </script>
+</body>
+</html>

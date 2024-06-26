@@ -1,0 +1,109 @@
+<template>
+    <div id="root">
+        <div class="todo-container">
+            <div class="todo-wrap">
+                <CaseHeader :addTodo="addTodo"/>
+                <CaseList :todos="todos" :checkOrUncheck="checkOrUncheck" :deleteTodo="deleteTodo"/>
+                <CaseFooter :todos="todos" :checkedAllTodo="checkedAllTodo" :clearAllDone="clearAllDone"/>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import CaseHeader from './components/CaseHeader.vue'
+    import CaseList from './components/CaseList.vue'
+    import CaseFooter from './components/CaseFooter.vue'
+
+    export default {
+        name:'App',
+        components:{CaseHeader, CaseList, CaseFooter},
+        data() {
+            return {
+                // todos:[
+                //     // {id:'001', name:'早读', done:false},
+                //     // {id:'002', name:'跑步', done:false},
+                //     // {id:'003', name:'看书', done:true},
+                // ]
+                todos:JSON.parse(localStorage.getItem('todos')) || []
+            }
+        },
+        methods: {
+            // 添加一个todo
+            addTodo(todo){
+                // console.log('App中的方法',x)
+                this.todos.unshift(todo)
+            },
+            // 勾或者不勾todo的动态交互
+            checkOrUncheck(id){
+                // console.log('改变了的id', a)
+                this.todos.forEach((t)=>{
+                    if (t.id === id) t.done = !t.done
+                })
+            },
+            deleteTodo(id){
+                // filter 不改变原数组，会给出新数组，因此再复制回去
+                this.todos = this.todos.filter((t)=>{
+                    return t.id !== id  // 返回过滤的条件 符合条件的留下
+                })
+            },
+            // 全选或者取消全不选
+            checkedAllTodo(e){
+                this.todos.forEach((t)=>{
+                    t.done = e
+                })
+            },
+            clearAllDone(){
+                this.todos = this.todos.filter((t)=>{
+                    return !t.done
+                })
+            }
+        },
+        watch:{
+            // todos(value){
+            //     localStorage.setItem('todo', JSON.stringify(value))
+            // }
+            
+            // 深度监视
+            todos:{
+                deep:true,
+                handler(value){  // 监视的是谁，value就是谁
+                    localStorage.setItem('todos', JSON.stringify(value))
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .todo-container {
+        width: 600px;
+        margin: 0 auto;
+    }
+    .todo-wrap {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    .btn {
+        /* display: inline-block; */
+        padding: 4px 12px;
+        font-size: 14px;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid #bd362f;
+        border-radius: 4px;
+        background-color: #da4f49;
+        color: #fff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    .btn:hover {
+        background-color: #bd362f;
+        color: #fff;
+    }
+    .btn:focus {
+        outline: none;
+    }
+</style>
